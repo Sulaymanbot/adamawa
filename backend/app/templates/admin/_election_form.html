@@ -1,0 +1,36 @@
+<div class="row g-3">
+  <div class="col-12">
+    <label for="title" class="form-label">Title</label>
+    <input id="title" name="title" class="form-control" required minlength="3" maxlength="200">
+  </div>
+  <div class="col-12 col-md-6">
+    <label for="type" class="form-label">Type</label>
+    <select id="type" name="type" class="form-select">
+      <option value="lg_chairmanship">LG chairmanship</option>
+      <option value="councillorship">Councillorship</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-6">
+    <label for="scope" class="form-label">Where</label>
+    <select id="scope" name="scope" class="form-select">
+      <option value="all_lgas">All LGAs</option>
+      <option value="single_lga">One LGA</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-6 d-none" id="lga-wrap">
+    <label for="lga_id" class="form-label">LGA</label>
+    <select id="lga_id" name="lga_id" class="form-select"><option value="">Choose…</option></select>
+  </div>
+  <div class="col-12 col-md-6">
+    <label for="start_at" class="form-label">Opens (WAT)</label>
+    <input id="start_at" name="start_at" type="datetime-local" class="form-control" required>
+  </div>
+  <div class="col-12 col-md-6">
+    <label for="end_at" class="form-label">Closes (WAT)</label>
+    <input id="end_at" name="end_at" type="datetime-local" class="form-control" required>
+  </div>
+  <div class="col-12">
+    <label for="description" class="form-label">Description <span class="muted">(optional)</span></label>
+    <textarea id="description" name="description" class="form-control" rows="2" maxlength="2000"></textarea>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div class="medium">
+  <h1 class="page-title">Results</h1>
+  <p class="subtitle">Simulated results. Not official.</p>
+  <div id="results-alert" aria-live="assertive"></div>
+  <div id="results-list"></div>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/results_list.js') }}"></script>{% endblock %}

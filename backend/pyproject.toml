@@ -1,0 +1,40 @@
+[project]
+name = "adamawa-online-voting"
+version = "1.0.0"
+description = "Simulated academic prototype of an online voting system for Adamawa State LG elections. NOT for real elections."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "e2e: browser end-to-end tests (Playwright); skipped if Playwright/browsers are unavailable",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:flask_limiter.*",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/cli.py"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "BLE", "SIM"]
+ignore = [
+    "S101",   # assert is fine in tests
+    "S311",   # random module not used for security (secrets is)
+    "B008",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"app/__init__.py" = ["E402"]
+"app/api/__init__.py" = ["E402"]
+"tests/**" = ["S105", "S106", "S108", "E402"]
+"scripts/**" = ["S105", "S106", "S113"]
+"migrations/**" = ["E501", "I001"]

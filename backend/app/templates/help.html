@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Help{% endblock %}
+{% block content %}
+<div class="medium">
+  <h1 class="page-title">Help</h1>
+  <p class="subtitle">Everything you need in one minute.</p>
+
+  <div class="panel section">
+    <h2 class="h5">Register</h2>
+    <ul class="mb-0">
+      <li>Use made-up details. Never your real voter card or NIN.</li>
+      <li>Pick your LGA, then ward, then polling unit.</li>
+      <li>Wait for an officer to verify you.</li>
+    </ul>
+  </div>
+
+  <div class="panel section">
+    <h2 class="h5">Vote</h2>
+    <ul class="mb-0">
+      <li>Sign in and press <strong>Go to ballot</strong>.</li>
+      <li>Pick one candidate, check it, then submit.</li>
+      <li>A vote can't be changed once submitted.</li>
+      <li>Keep your receipt code. It doesn't show your choice.</li>
+    </ul>
+  </div>
+
+  <div class="panel section" id="limitations">
+    <h2 class="h5">Limitations</h2>
+    <ul class="mb-0">
+      <li>This is a university demo, not an official election system.</li>
+      <li>Votes are encrypted, but this alone doesn't fully guarantee secrecy or verifiability.</li>
+      <li>All people, places and results are fictional.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

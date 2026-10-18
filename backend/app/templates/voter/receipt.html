@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Your receipt{% endblock %}
+{% block content %}
+<div id="receipt-root" class="narrow" data-election-id="{{ election_id }}">
+  <div id="receipt-alert" aria-live="assertive"></div>
+  <div id="receipt-body"></div>
+  <a class="btn btn-outline-dark mt-4" href="{{ url_for('web.dashboard') }}">Back to dashboard</a>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/receipt.js') }}"></script>{% endblock %}

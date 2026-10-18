@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1 class="page-title">Overview</h1>
+<p class="subtitle">Totals only. Individual votes are never shown.</p>
+<div id="admin-alert" aria-live="assertive"></div>
+<div id="stat-cards" class="row g-3 section"></div>
+<div class="row g-4">
+  <section class="col-12 col-lg-7" aria-labelledby="participation-heading">
+    <h2 id="participation-heading" class="label">Turnout</h2>
+    <div id="participation"></div>
+  </section>
+  <section class="col-12 col-lg-5" aria-labelledby="pending-heading">
+    <h2 id="pending-heading" class="label">To do</h2>
+    <div id="pending"></div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/admin_dashboard.js') }}"></script>{% endblock %}

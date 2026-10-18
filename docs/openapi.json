@@ -1,0 +1,2332 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Adamawa LG Online Voting \u2013 Simulated Prototype API",
+    "version": "1.0.0",
+    "description": "Academic prototype. NOT an official election platform. All responses use the Envelope shape."
+  },
+  "paths": {
+    "/api/v1/auth/csrf": {
+      "get": {
+        "summary": "Get a CSRF token for state-changing requests",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register a simulated voter (starts as pending)",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Sign in (may require an OTP step)",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Sign out and revoke the server-side session",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "any",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/otp/request": {
+      "post": {
+        "summary": "Re-send the one-time code for a pending sign-in",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "otp-pending",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "summary": "Complete sign-in with the one-time code",
+        "tags": [
+          "Auth"
+        ],
+        "x-auth": "otp-pending",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerifyRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "Current user profile (masked)",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "any",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/locations/lgas": {
+      "get": {
+        "summary": "List LGAs",
+        "tags": [
+          "Locations"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        }
+      }
+    },
+    "/api/v1/locations/lgas/{lga_id}/wards": {
+      "get": {
+        "summary": "List wards in an LGA",
+        "tags": [
+          "Locations"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "lga_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/locations/wards/{ward_id}/polling-units": {
+      "get": {
+        "summary": "List polling units in a ward",
+        "tags": [
+          "Locations"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "ward_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/elections": {
+      "get": {
+        "summary": "Elections relevant to the signed-in voter",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "voter",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/elections/{election_id}": {
+      "get": {
+        "summary": "Election details",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "voter",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/elections/{election_id}/ballot": {
+      "get": {
+        "summary": "Ballot (candidates for the voter's LGA)",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "voter",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/elections/{election_id}/votes": {
+      "post": {
+        "summary": "Cast a vote (send Idempotency-Key header)",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "voter",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoteRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/elections/{election_id}/participation-status": {
+      "get": {
+        "summary": "Has the voter voted? (never the choice)",
+        "tags": [
+          "Voter"
+        ],
+        "x-auth": "voter",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/elections/{election_id}/results": {
+      "get": {
+        "summary": "Aggregate results, only once published",
+        "tags": [
+          "Results"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/results": {
+      "get": {
+        "summary": "Elections with published results",
+        "tags": [
+          "Results"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        }
+      }
+    },
+    "/api/v1/receipts/verify": {
+      "post": {
+        "summary": "Check that a receipt exists in the ballot box",
+        "tags": [
+          "Results"
+        ],
+        "x-auth": "public",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiptCheckRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/dashboard": {
+      "get": {
+        "summary": "Summary statistics",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/voters": {
+      "get": {
+        "summary": "List voters by filter (status, lga_id, ward_id, page)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/voters/search": {
+      "post": {
+        "summary": "Text search (name, exact email, exact voter ID) in the request body",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoterSearchRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/voters/{voter_id}/verification": {
+      "patch": {
+        "summary": "Verify / reject / suspend / reactivate a voter",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "voter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections": {
+      "get": {
+        "summary": "List elections with participation",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create an election (draft)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}": {
+      "get": {
+        "summary": "Election details for admins",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Edit an election (draft/scheduled only)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/schedule": {
+      "post": {
+        "summary": "draft -> scheduled",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/unschedule": {
+      "post": {
+        "summary": "scheduled -> draft",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/open": {
+      "post": {
+        "summary": "Open voting",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/close": {
+      "post": {
+        "summary": "Close voting",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/archive": {
+      "post": {
+        "summary": "Archive a closed/cancelled election",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/cancel": {
+      "post": {
+        "summary": "Cancel (reason required if open)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionAction"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/publish-results": {
+      "post": {
+        "summary": "Publish (optionally at a time) or hide results",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/elections/{election_id}/candidates": {
+      "get": {
+        "summary": "List candidates",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Add a candidate",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "election_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/candidates/{candidate_id}": {
+      "patch": {
+        "summary": "Edit / activate / deactivate a candidate",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "candidate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Remove a candidate (before voting only)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "parameters": [
+          {
+            "name": "candidate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "summary": "Audit log (event_type, actor_user_id, entity_type, from, to, page)",
+        "tags": [
+          "Admin"
+        ],
+        "x-auth": "admin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Error envelope"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Envelope": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "meta": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "request_id": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "surname": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Surname",
+            "type": "string"
+          },
+          "first_name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "First Name",
+            "type": "string"
+          },
+          "other_names": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Other Names"
+          },
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "phone": {
+            "maxLength": 20,
+            "minLength": 7,
+            "title": "Phone",
+            "type": "string"
+          },
+          "voter_id": {
+            "maxLength": 30,
+            "minLength": 10,
+            "title": "Voter Id",
+            "type": "string"
+          },
+          "lga_id": {
+            "exclusiveMaximum": 2147483648,
+            "exclusiveMinimum": 0,
+            "title": "Lga Id",
+            "type": "integer"
+          },
+          "ward_id": {
+            "exclusiveMaximum": 2147483648,
+            "exclusiveMinimum": 0,
+            "title": "Ward Id",
+            "type": "integer"
+          },
+          "polling_unit_id": {
+            "exclusiveMaximum": 2147483648,
+            "exclusiveMinimum": 0,
+            "title": "Polling Unit Id",
+            "type": "integer"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          },
+          "confirm_password": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Confirm Password",
+            "type": "string"
+          },
+          "demo_acknowledged": {
+            "title": "Demo Acknowledged",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "surname",
+          "first_name",
+          "email",
+          "phone",
+          "voter_id",
+          "lga_id",
+          "ward_id",
+          "polling_unit_id",
+          "password",
+          "confirm_password",
+          "demo_acknowledged"
+        ],
+        "title": "RegisterRequest",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "maxLength": 254,
+            "minLength": 3,
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "OtpVerifyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^\\d{6}$",
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "OtpVerifyRequest",
+        "type": "object"
+      },
+      "VoteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "exclusiveMaximum": 2147483648,
+            "exclusiveMinimum": 0,
+            "title": "Candidate Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "title": "VoteRequest",
+        "type": "object"
+      },
+      "ReceiptCheckRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "receipt_reference": {
+            "pattern": "^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$",
+            "title": "Receipt Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "receipt_reference"
+        ],
+        "title": "ReceiptCheckRequest",
+        "type": "object"
+      },
+      "VoterSearchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Q"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "pending",
+                  "verified",
+                  "rejected",
+                  "suspended"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "lga_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lga Id"
+          },
+          "ward_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ward Id"
+          },
+          "page": {
+            "default": 1,
+            "maximum": 10000,
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "per_page": {
+            "default": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "VoterSearchRequest",
+        "type": "object"
+      },
+      "VerificationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "verify",
+              "reject",
+              "suspend",
+              "reactivate"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "VerificationRequest",
+        "type": "object"
+      },
+      "ElectionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "default": "lg_chairmanship",
+            "enum": [
+              "lg_chairmanship",
+              "councillorship"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "scope": {
+            "default": "all_lgas",
+            "enum": [
+              "single_lga",
+              "all_lgas"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "lga_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lga Id"
+          },
+          "start_at": {
+            "format": "date-time",
+            "title": "Start At",
+            "type": "string"
+          },
+          "end_at": {
+            "format": "date-time",
+            "title": "End At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "start_at",
+          "end_at"
+        ],
+        "title": "ElectionCreate",
+        "type": "object"
+      },
+      "ElectionUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "lg_chairmanship",
+                  "councillorship"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Type"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "enum": [
+                  "single_lga",
+                  "all_lgas"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Scope"
+          },
+          "lga_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lga Id"
+          },
+          "start_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start At"
+          },
+          "end_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End At"
+          }
+        },
+        "title": "ElectionUpdate",
+        "type": "object"
+      },
+      "ElectionAction": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          }
+        },
+        "title": "ElectionAction",
+        "type": "object"
+      },
+      "PublishRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "publish_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Publish At"
+          },
+          "hide": {
+            "default": false,
+            "title": "Hide",
+            "type": "boolean"
+          }
+        },
+        "title": "PublishRequest",
+        "type": "object"
+      },
+      "CandidateCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "full_name": {
+            "maxLength": 150,
+            "minLength": 3,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "party_affiliation": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Party Affiliation",
+            "type": "string"
+          },
+          "manifesto_summary": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Manifesto Summary"
+          },
+          "lga_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lga Id"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Photo Url"
+          }
+        },
+        "required": [
+          "full_name",
+          "party_affiliation"
+        ],
+        "title": "CandidateCreate",
+        "type": "object"
+      },
+      "CandidateUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "maxLength": 150,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Full Name"
+          },
+          "party_affiliation": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Party Affiliation"
+          },
+          "manifesto_summary": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Manifesto Summary"
+          },
+          "lga_id": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lga Id"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Photo Url"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "active",
+                  "inactive"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          }
+        },
+        "title": "CandidateUpdate",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "adv_session"
+      }
+    }
+  }
+}

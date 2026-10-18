@@ -1,0 +1,25 @@
+# Secrets and local config — never commit
+.env
+*.env
+!.env.example
+backend/.env
+
+# Python
+backend/.venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

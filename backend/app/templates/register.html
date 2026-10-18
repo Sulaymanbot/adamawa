@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="medium">
+  <h1 class="page-title">Create your voter account</h1>
+  <p class="subtitle">Use made-up details. An officer approves your account before you can vote.</p>
+
+  <div id="register-alert" aria-live="assertive"></div>
+
+  <form id="register-form" class="panel" novalidate>
+    <fieldset>
+      <legend class="label">Your name</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <label for="surname" class="form-label">Surname</label>
+          <input id="surname" name="surname" class="form-control" required maxlength="80" autocomplete="family-name">
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="first_name" class="form-label">First name</label>
+          <input id="first_name" name="first_name" class="form-control" required maxlength="80" autocomplete="given-name">
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="other_names" class="form-label">Other names <span class="muted">(optional)</span></label>
+          <input id="other_names" name="other_names" class="form-control" maxlength="120" autocomplete="additional-name">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="label">Contact</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input id="email" name="email" type="email" class="form-control" required maxlength="254" autocomplete="email">
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="phone" class="form-label">Phone</label>
+          <input id="phone" name="phone" type="tel" class="form-control" required maxlength="20" autocomplete="tel" placeholder="0803 123 4567">
+        </div>
+        <div class="col-12">
+          <label for="voter_id" class="form-label">Demo voter ID</label>
+          <input id="voter_id" name="voter_id" class="form-control" required maxlength="30" autocomplete="off" placeholder="DEMO12345678" aria-describedby="vid-help">
+          <div id="vid-help" class="form-text">10–20 letters or numbers.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="label">Where you vote</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <label for="lga_id" class="form-label">LGA</label>
+          <select id="lga_id" name="lga_id" class="form-select" required><option value="">Loading…</option></select>
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="ward_id" class="form-label">Ward</label>
+          <select id="ward_id" name="ward_id" class="form-select" required disabled><option value="">Pick an LGA first</option></select>
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="polling_unit_id" class="form-label">Polling unit</label>
+          <select id="polling_unit_id" name="polling_unit_id" class="form-select" required disabled><option value="">Pick a ward first</option></select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="label">Password</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="password" class="form-label">Password</label>
+          <input id="password" name="password" type="password" class="form-control" required minlength="10" maxlength="64" autocomplete="new-password" aria-describedby="pw-help">
+          <div id="pw-help" class="form-text">10+ characters, with a letter and a number.</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="confirm_password" class="form-label">Confirm password</label>
+          <input id="confirm_password" name="confirm_password" type="password" class="form-control" required maxlength="64" autocomplete="new-password">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="form-check my-4">
+      <input class="form-check-input" type="checkbox" id="demo_acknowledged" name="demo_acknowledged" required>
+      <label class="form-check-label" for="demo_acknowledged">I understand this is a demo.</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg w-100" id="register-submit">Create account</button>
+  </form>
+
+  <div id="register-success" class="panel d-none" tabindex="-1">
+    <div class="big-check" aria-hidden="true">✓</div>
+    <h2 class="h4">Account created</h2>
+    <p id="register-next" class="muted"></p>
+    <a class="btn btn-primary" href="{{ url_for('web.login') }}">Sign in</a>
+  </div>
+
+  <p class="mt-3">Already have an account? <a href="{{ url_for('web.login') }}">Sign in</a></p>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/register.js') }}"></script>{% endblock %}

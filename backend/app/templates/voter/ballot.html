@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Ballot{% endblock %}
+{% block content %}
+<div id="ballot-root" class="medium" data-election-id="{{ election_id }}">
+  <p><a href="{{ url_for('web.dashboard') }}">← My dashboard</a></p>
+  <h1 class="page-title" id="ballot-title">Ballot</h1>
+  <p class="subtitle" id="ballot-meta"></p>
+  <div id="ballot-alert" aria-live="assertive"></div>
+
+  <!-- Step 1: choose (nothing preselected) -->
+  <form id="ballot-form" class="d-none" novalidate>
+    <fieldset>
+      <legend class="label" id="ballot-legend">Choose one candidate</legend>
+      <div id="ballot-options" class="d-grid gap-2" role="radiogroup" aria-labelledby="ballot-legend" aria-required="true"></div>
+    </fieldset>
+    <div id="choose-error" class="invalid-feedback d-block mt-2" aria-live="assertive"></div>
+    <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" id="review-btn">Continue</button>
+  </form>
+
+  <!-- Step 2: review -->
+  <section id="review-step" class="d-none panel" aria-labelledby="review-heading" tabindex="-1">
+    <h2 id="review-heading" class="label">Check your choice</h2>
+    <p class="fs-3 fw-bold mb-0" id="review-name"></p>
+    <p class="muted" id="review-party"></p>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <button type="button" class="btn btn-primary btn-lg" id="confirm-open-btn" data-bs-toggle="modal" data-bs-target="#confirm-modal">Submit vote</button>
+      <button type="button" class="btn btn-outline-dark btn-lg" id="change-btn">Change</button>
+    </div>
+  </section>
+</div>
+
+<!-- Step 3: final confirmation -->
+<div class="modal fade" id="confirm-modal" tabindex="-1" aria-labelledby="confirm-title" aria-describedby="confirm-desc" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-2">
+      <div class="modal-header">
+        <h2 class="modal-title h4" id="confirm-title">Submit your vote?</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancel"></button>
+      </div>
+      <div class="modal-body" id="confirm-desc">
+        <p class="mb-1">You're voting for <strong id="confirm-name"></strong>.</p>
+        <p class="muted mb-0">This cannot be undone.</p>
+        <div id="submit-alert" class="mt-3" aria-live="assertive"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" id="confirm-cancel">Go back</button>
+        <button type="button" class="btn btn-primary" id="submit-vote-btn">Yes, submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/ballot.js') }}"></script>{% endblock %}

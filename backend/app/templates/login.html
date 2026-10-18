@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Officer sign in' if portal == 'admin' else 'Sign in' }}{% endblock %}
+{% block content %}
+<div class="narrow">
+  <h1 class="page-title">{{ 'Officer sign in' if portal == 'admin' else 'Sign in' }}</h1>
+  <p class="subtitle">{{ 'For electoral officers only.' if portal == 'admin' else 'Welcome back.' }}</p>
+  <div id="login-alert" aria-live="assertive"></div>
+  <form id="login-form" class="panel" novalidate data-next="{{ next_url }}" data-portal="{{ portal }}">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input id="email" name="email" type="email" class="form-control" required autocomplete="username">
+    </div>
+    <div class="mb-4">
+      <label for="password" class="form-label">Password</label>
+      <input id="password" name="password" type="password" class="form-control" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg w-100" id="login-submit">Sign in</button>
+  </form>
+  {% if portal != 'admin' %}
+    <p class="mt-3">No account? <a href="{{ url_for('web.register') }}">Register</a></p>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/login.js') }}"></script>{% endblock %}

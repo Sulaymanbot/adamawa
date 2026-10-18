@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<h1 class="page-title">Audit log</h1>
+<p class="subtitle">Every sensitive action, newest first. Votes are never logged.</p>
+<div id="audit-alert" aria-live="assertive"></div>
+<form id="audit-filters" class="panel section" role="search">
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-3">
+      <label for="a-event" class="form-label">Event</label>
+      <input id="a-event" name="event_type" class="form-control" placeholder="e.g. vote." maxlength="60">
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="a-entity" class="form-label">Type</label>
+      <select id="a-entity" name="entity_type" class="form-select">
+        <option value="">All</option><option value="voter">Voter</option><option value="election">Election</option>
+        <option value="candidate">Candidate</option><option value="user">User</option>
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="a-actor" class="form-label">User #</label>
+      <input id="a-actor" name="actor_user_id" type="number" min="1" class="form-control">
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="a-from" class="form-label">From</label>
+      <input id="a-from" name="from" type="date" class="form-control">
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="a-to" class="form-label">To</label>
+      <input id="a-to" name="to" type="date" class="form-control">
+    </div>
+    <div class="col-12 col-md-1"><button class="btn btn-primary w-100" type="submit">Go</button></div>
+  </div>
+</form>
+<div id="audit-table"></div>
+<nav id="audit-pager" aria-label="Pages" class="mt-3"></nav>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/admin_audit.js') }}"></script>{% endblock %}

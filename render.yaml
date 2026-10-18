@@ -1,0 +1,43 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Free web service. MySQL is NOT offered by Render, so point DATABASE_URL at a
+# free MySQL provider (e.g. Aiven). See docs/DEPLOY.md.
+services:
+  - type: web
+    name: adamawa-vote
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Migrations + one-time test users run on every start (both are safe to repeat).
+    startCommand: >-
+      flask db upgrade &&
+      flask seed-test-users --if-empty &&
+      gunicorn wsgi:app --workers 1 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: FLASK_APP
+        value: wsgi:app
+      - key: FLASK_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: ALLOW_DEMO_SEED
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: IDENTIFIER_PEPPER
+        generateValue: true
+      # Paste values yourself (python scripts/gen_secrets.py / your MySQL provider):
+      - key: VOTE_ENCRYPTION_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL_CA_PEM
+        sync: false
+      - key: TEST_ADMIN_PASSWORD
+        sync: false
+      - key: TEST_VOTER_PASSWORD
+        sync: false

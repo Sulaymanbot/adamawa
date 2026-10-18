@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Check a receipt{% endblock %}
+{% block content %}
+<div class="narrow">
+  <h1 class="page-title">Check a receipt</h1>
+  <p class="subtitle">Confirm a vote was recorded. Your choice is never shown.</p>
+  <div id="receipt-alert" aria-live="polite"></div>
+  <form id="receipt-form" class="panel" novalidate>
+    <label for="receipt_reference" class="form-label">Receipt code</label>
+    <input id="receipt_reference" name="receipt_reference" class="form-control form-control-lg text-uppercase" placeholder="ABCD-EFGH-JKLM-NPQR" maxlength="19" autocomplete="off" required>
+    <button class="btn btn-primary btn-lg w-100 mt-4" type="submit">Check</button>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/receipt_check.js') }}"></script>{% endblock %}

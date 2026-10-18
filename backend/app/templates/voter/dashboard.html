@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}My dashboard{% endblock %}
+{% block content %}
+<div class="medium">
+  <h1 class="page-title" id="greeting">My dashboard</h1>
+  <div id="dash-alert" aria-live="assertive"></div>
+
+  <section class="section" aria-label="My account">
+    <div id="profile" class="panel"></div>
+  </section>
+
+  <section aria-labelledby="elections-heading">
+    <h2 id="elections-heading" class="label">My elections</h2>
+    <div id="elections"></div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>{% endblock %}

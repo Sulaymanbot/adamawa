@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong{% endblock %}
+{% block content %}
+<div class="narrow">
+  <h1 class="page-title">Something went wrong</h1>
+  <p class="subtitle">{{ message }}</p>
+  <p class="small muted">Error {{ status }}{% if g.request_id %} · Ref {{ g.request_id[:8] }}{% endif %}</p>
+  <a class="btn btn-primary" href="{{ url_for('web.index') }}">Go home</a>
+</div>
+{% endblock %}

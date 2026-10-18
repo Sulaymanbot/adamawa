@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div id="results-root" data-election-id="{{ election_id }}">
+  <p><a href="{{ url_for('web.results_list') }}">← All results</a></p>
+  <h1 class="page-title" id="results-title">Results</h1>
+  <p class="subtitle">SIMULATED RESULTS · Not official.</p>
+  <div id="results-alert" aria-live="assertive"></div>
+  <div id="results-summary"></div>
+  <div id="results-races"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/pages/results.js') }}"></script>
+{% endblock %}

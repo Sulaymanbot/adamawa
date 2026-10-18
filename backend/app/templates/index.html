@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1 class="display">Vote from<br>anywhere.</h1>
+  <p class="lead">A demo voting system for Adamawa State local government elections.</p>
+  <div class="d-flex flex-wrap gap-2 mt-4">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('web.login') }}">Sign in to vote</a>
+    <a class="btn btn-outline-dark btn-lg" href="{{ url_for('web.register') }}">Register</a>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="how">
+  <h2 id="how" class="label">How it works</h2>
+  <ol class="steps">
+    <li><strong>Register</strong><span class="muted">Create an account with made-up details.</span></li>
+    <li><strong>Get verified</strong><span class="muted">An officer approves your account.</span></li>
+    <li><strong>Vote</strong><span class="muted">Pick one candidate and keep your receipt.</span></li>
+  </ol>
+</section>
+
+<p class="quick-links">
+  <a href="{{ url_for('web.results_list') }}">Results</a>
+  <a href="{{ url_for('web.receipt_check') }}">Check a receipt</a>
+  <a href="{{ url_for('web.admin_login') }}">Officer sign in</a>
+</p>
+{% endblock %}
