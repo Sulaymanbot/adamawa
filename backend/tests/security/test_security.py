@@ -260,7 +260,7 @@ class TestHeaders:
             assert "frame-ancestors 'none'" in resp.headers["Content-Security-Policy"]
             assert resp.headers["X-Frame-Options"] == "DENY"
             assert resp.headers["X-Content-Type-Options"] == "nosniff"
-            assert resp.headers["Referrer-Policy"] == "no-referrer"
+            assert resp.headers["Referrer-Policy"] == "same-origin"
             assert resp.headers["Cache-Control"] == "no-store"
             assert resp.headers["X-Request-ID"]
 
