@@ -93,7 +93,7 @@ def register_error_handlers(app: Flask) -> None:
     def handle_csrf(exc: CSRFError):
         from app.services import audit_service
 
-        audit_service.record("security.csrf_rejected", description=f"CSRF check failed on {request.path}")
+        audit_service.record("security.csrf_rejected", description=f"CSRF check failed on {request.path}: {exc.description}")
         if _wants_json():
             return error_response(
                 400, "csrf_failed", "Your session security token is missing or expired. Refresh the page and try again."

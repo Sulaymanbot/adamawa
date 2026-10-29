@@ -51,8 +51,9 @@ def register_cli(app: Flask) -> None:
 
     @app.cli.command("seed-test-users")
     @click.option("--if-empty", "if_empty", is_flag=True, help="Do nothing (exit 0) if users already exist.")
-    def seed_test_users(if_empty: bool):
-        """Create only LGAs (with wards/polling units), 1 admin and 5 verified voters. No elections."""
+    @click.option("--voters", "voter_count", default=5, show_default=True, type=click.IntRange(1, 10))
+    def seed_test_users(if_empty: bool, voter_count: int):
+        """Create only LGAs (with wards/polling units), 1 admin and N verified voters. No elections."""
         from app.models import User
         from app.schemas import validate_password_strength
         from app.security.passwords import hash_password
@@ -85,7 +86,12 @@ def register_cli(app: Flask) -> None:
             ("Grace", "Yohanna", "Yola North"),
             ("Ibrahim", "Lawan", "Yola South"),
             ("Fatima", "Usman", "Mubi North"),
-        ]
+            ("Daniel", "Ishaku", "Mubi South"),
+            ("Hauwa", "Abdullahi", "Numan"),
+            ("Joseph", "Bitrus", "Ganye"),
+            ("Zainab", "Adamu", "Hong"),
+            ("Yusuf", "Danladi", "Michika"),
+        ][:voter_count]
         for i, (first, last, lga_name) in enumerate(people, start=1):
             lga = lgas[lga_name]
             ward = lga.wards[0]
@@ -109,9 +115,9 @@ def register_cli(app: Flask) -> None:
     @app.cli.command("reset-demo")
     @click.option("--yes", is_flag=True, help="Confirm you want to DELETE ALL DATA.")
     def reset_demo(yes: bool):
-        """DESTRUCTIVE: delete all data in the local database (development only)."""
-        if current_app.config["APP_ENV"] != "development":
-            raise click.ClickException("reset-demo refuses to run unless FLASK_ENV=development.")
+        """DESTRUCTIVE: delete all data (development, or demo hosting with ALLOW_DEMO_SEED=true)."""
+        if current_app.config["APP_ENV"] != "development" and not current_app.config.get("ALLOW_DEMO_SEED"):
+            raise click.ClickException("reset-demo refuses to run unless FLASK_ENV=development or ALLOW_DEMO_SEED=true.")
         if not yes:
             click.confirm("This DELETES ALL DATA in the local database. Continue?", abort=True)
         seed_service.wipe_all_data()
