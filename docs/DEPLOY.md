@@ -1,86 +1,118 @@
-# Deploying (free): Render + Aiven MySQL
+# Deploying (free): PythonAnywhere
 
-**Recommended setup for a school demo:**
-
-| Piece | Service | Free tier |
-|---|---|---|
-| Web app (Flask + gunicorn) | [Render](https://render.com) Web Service | Free. Sleeps after ~15 min idle; first visit after that takes ~30–60 s to wake |
-| Database (MySQL 8) | [Aiven](https://aiven.io) for MySQL | Free plan: 1 node, small storage, always on |
-
-Why these two: Render deploys straight from GitHub on every push and gives HTTPS automatically. It has no MySQL, though (its free Postgres is deleted after 30 days), so the database goes on Aiven's free MySQL, which matches Chapter 3 of the report (MySQL 8).
-
-Alternative (single service, no sleeping): **PythonAnywhere** free plan includes MySQL, but it is set up by hand rather than deployed from git.
+The PythonAnywhere free plan includes the web app, HTTPS and a MySQL database in one account. Replace `USERNAME` below with your PythonAnywhere username.
 
 ---
 
-## 1. Push the code to GitHub
+## 1. Get the code onto PythonAnywhere
+
+Open a **Bash console** (Consoles tab):
 
 ```bash
-cd adamawa-online-voting
-git push -u origin main
+git clone https://github.com/Sulaymanbot/adamawa.git
+cd adamawa/backend
+mkvirtualenv --python=python3.13 adamawa-venv   # or the newest Python 3.12+ offered
+pip install -r requirements.txt
 ```
 
-`backend/.env` is git-ignored, so no secrets are pushed.
+`backend/.env` is git-ignored, so no secrets come from GitHub. You create it in step 3.
 
-## 2. Create the free MySQL database (Aiven)
+## 2. Create the MySQL database
 
-1. Sign up at aiven.io, then **Create service → MySQL → Free plan**, and pick a region close to you (e.g. Europe).
-2. When it is running, open the service's **Overview** page:
-   - Copy the **Service URI**. It looks like `mysql://avnadmin:PASSWORD@HOST:PORT/defaultdb?ssl-mode=REQUIRED`.
-   - Download the **CA certificate** (`ca.pem`).
-3. Turn the URI into the app's `DATABASE_URL` by **removing `?ssl-mode=REQUIRED`** (the app sets up TLS from the CA certificate instead):
+On the **Databases** tab:
+
+1. Set a MySQL password.
+2. Create a database named `adamawa`. PythonAnywhere names it `USERNAME$adamawa`.
+3. Note the host: `USERNAME.mysql.pythonanywhere-services.com`.
+
+## 3. Create `backend/.env`
+
+Generate the secrets:
+
+```bash
+cd ~/adamawa/backend
+python scripts/gen_secrets.py
+```
+
+**Keep `VOTE_ENCRYPTION_KEY` safe and never change it** while the database holds votes. If it changes, every stored ballot becomes unreadable.
+
+Then create `~/adamawa/backend/.env` (with `nano .env`, or the Files tab):
+
+```
+FLASK_APP=wsgi:app
+FLASK_ENV=production
+TRUST_PROXY=true
+ALLOW_DEMO_SEED=true
+
+SECRET_KEY=...            # from gen_secrets.py
+VOTE_ENCRYPTION_KEY=...   # from gen_secrets.py
+IDENTIFIER_PEPPER=...     # from gen_secrets.py
+
+DATABASE_URL=mysql+pymysql://USERNAME:MYSQL_PASSWORD@USERNAME.mysql.pythonanywhere-services.com/USERNAME$adamawa?charset=utf8mb4
+
+TEST_ADMIN_PASSWORD=...   # for admin@example.com (10+ chars, letter + number)
+TEST_VOTER_PASSWORD=...   # for voter1…voter5@example.com
+```
+
+## 4. Create the tables and the test accounts
+
+```bash
+cd ~/adamawa/backend
+flask db upgrade
+flask seed-test-users
+```
+
+This creates 21 LGAs, 1 admin (`admin@example.com`) and 5 verified voters (`voter1@example.com` … `voter5@example.com`), using the passwords from `.env`. Add `--voters 10` for up to 10 voters.
+
+## 5. Create the web app
+
+On the **Web** tab:
+
+1. **Add a new web app → Manual configuration**, with the same Python version as the virtualenv.
+2. **Virtualenv:** `/home/USERNAME/.virtualenvs/adamawa-venv`
+3. **Source code:** `/home/USERNAME/adamawa/backend`
+4. Open the **WSGI configuration file** link and replace its contents with:
+   ```python
+   import sys
+
+   path = "/home/USERNAME/adamawa/backend"
+   if path not in sys.path:
+       sys.path.insert(0, path)
+
+   from wsgi import app as application  # noqa: E402
    ```
-   mysql://avnadmin:PASSWORD@HOST:PORT/defaultdb
-   ```
-   (`mysql://` is fine; the app switches it to the PyMySQL driver.)
+5. **Static files:** URL `/static/`, directory `/home/USERNAME/adamawa/backend/app/static`
+6. **Force HTTPS: Enabled.** This is required. Production uses HTTPS-only cookies, so sign-in fails on a plain `http://` page.
+7. Click **Reload**, then open `https://USERNAME.pythonanywhere.com`.
 
-## 3. Generate the app's secrets
-
-```bash
-cd backend
-.venv/bin/python scripts/gen_secrets.py
-```
-
-You only need `VOTE_ENCRYPTION_KEY` from the output, because Render generates the other two. **Keep it safe and never change it** while the database holds votes. If it changes, every stored ballot becomes unreadable.
-
-## 4. Create the Render service from the blueprint
-
-1. Sign up at render.com with GitHub.
-2. **New → Blueprint**, then pick the `adamawa-online-voting` repo. Render reads `render.yaml`.
-3. Render asks for the values marked `sync: false`:
-
-| Variable | Value |
-|---|---|
-| `VOTE_ENCRYPTION_KEY` | from step 3 |
-| `DATABASE_URL` | the URL from step 2 (without `?ssl-mode=...`) |
-| `DB_SSL_CA_PEM` | paste the **whole contents** of Aiven's `ca.pem` |
-| `TEST_ADMIN_PASSWORD` | a password for `admin@example.com` (10+ chars, letter + number) |
-| `TEST_VOTER_PASSWORD` | a password for `voter1…voter5@example.com` |
-
-4. Click **Apply**. The first deploy takes a few minutes. On every start, the service:
-   - runs the database migrations (`flask db upgrade`),
-   - creates the test accounts **only if the database is empty** (`flask seed-test-users --if-empty`): 21 LGAs, 1 admin and 5 verified voters,
-   - starts gunicorn. Render checks `/healthz` to know the app is up.
-5. Open `https://adamawa-vote.onrender.com` (or whatever name Render shows) and sign in.
-
-After this, every `git push` to `main` redeploys automatically.
-
-## Resetting the online database
-
-Render's free plan has no shell. To start fresh, run this from your laptop against the Aiven database:
+## Updating after a `git push`
 
 ```bash
-cd backend
-export DATABASE_URL='mysql://avnadmin:PASSWORD@HOST:PORT/defaultdb'
-export DB_SSL_CA=/path/to/ca.pem
-FLASK_ENV=development .venv/bin/flask reset-demo --yes
+cd ~/adamawa && git pull
+cd backend && pip install -r requirements.txt && flask db upgrade
 ```
 
-The next restart or deploy on Render re-creates the test accounts. Use **Manual Deploy → Restart** in Render.
+Then click **Reload** on the Web tab.
+
+## Resetting the database and test accounts
+
+```bash
+cd ~/adamawa/backend
+flask reset-demo --yes
+flask seed-test-users
+```
+
+This deletes **all** data (elections, votes, registered voters), then recreates the test accounts with the current passwords in `.env`.
+
+## Troubleshooting sign-in
+
+- **"Your session security token is missing or expired":** check that Force HTTPS is on and that you're using the `https://` address. Then see the error log (Web tab). With `security.csrf_rejected` entries the audit log records the exact reason.
+- **"Invalid email or password":** the passwords were set when the accounts were created. Changing `.env` later does not change them; reset as above.
+- **Errors after an update:** check the **error log** on the Web tab.
 
 ## Notes and limits
 
-- **Cold starts:** the free web service sleeps when idle. Open the site a minute before a demo.
-- **Rate limits** are kept in memory, per server process, and reset when the service restarts. That's fine for one free instance.
+- **Free plan:** the web app must be extended from the Web tab every 3 months or it is disabled.
+- **Rate limits** are kept in memory, per worker process, and reset on reload. That's fine for a demo.
 - **Production settings** (`FLASK_ENV=production`): Secure HTTPS-only cookies and HSTS are switched on, the app trusts exactly one proxy hop (`TRUST_PROXY=true`, needed for HTTPS detection and correct client IPs in audit logs), logs are JSON, and the demo admin override is refused.
 - `ALLOW_DEMO_SEED=true` is what lets the test accounts be created on a server. Default passwords are refused there; you must set your own.

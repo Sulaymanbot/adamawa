@@ -142,7 +142,7 @@ FLASK_ENV=development .venv/bin/flask reset-demo --yes   # deletes ALL rows; ref
 
 ## Deploying
 
-Free hosting with **Render** (web app, deploys from GitHub) and **Aiven** (free MySQL). The repo includes `render.yaml`, a gunicorn entry point (`backend/wsgi.py`) and a `/healthz` check. Step-by-step guide: [docs/DEPLOY.md](docs/DEPLOY.md).
+Free hosting on **PythonAnywhere** (web app, HTTPS and MySQL in one account). The repo includes a WSGI entry point (`backend/wsgi.py`) and a `/healthz` check. Step-by-step guide: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## How a vote flows
 

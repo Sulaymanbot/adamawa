@@ -37,7 +37,7 @@ def normalize_database_url(url: str | None) -> str | None:
 
 
 def engine_options() -> dict:
-    """SQLAlchemy engine options, including TLS for cloud MySQL (e.g. Aiven).
+    """SQLAlchemy engine options, including TLS for cloud MySQL.
 
     DB_SSL_CA       path to the provider's CA certificate, or
     DB_SSL_CA_PEM   the certificate text itself (handy for hosting env vars).
@@ -120,7 +120,7 @@ class BaseConfig:
     # Add HSTS header (only meaningful behind HTTPS).
     ENABLE_HSTS = _bool("ENABLE_HSTS", False)
 
-    # Behind a hosting proxy (Render, Railway, nginx…): trust X-Forwarded-* from
+    # Behind a hosting proxy (PythonAnywhere, nginx…): trust X-Forwarded-* from
     # exactly one hop so request.scheme is https and remote_addr is the client.
     TRUST_PROXY = _bool("TRUST_PROXY", False)
 
